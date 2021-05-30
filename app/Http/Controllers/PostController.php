@@ -52,6 +52,7 @@ class PostController extends Controller
             $newRequest = [
                 'title' => $request['title'],
                 'slug' => $request['slug'],
+                'author' => $request['author'],
                 'description' => $request['description'],
                 'blog-image' => $path,
             ];
