@@ -78,6 +78,7 @@ class PostController extends Controller
             'slug' => $post['slug'],
             'description' => $post['description'],
             'author' => $user['name'],
+            'blog-image' => $post['blog-image'],
         ]);
     }
 
