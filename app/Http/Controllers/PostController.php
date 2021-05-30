@@ -15,7 +15,17 @@ class PostController extends Controller
      */
     public function index()
     {
-        return Post::all();
+        $posts = Post::all();
+        foreach($posts as $post) {
+            $user = User::where('id', $post['author'])->first();
+            $postData[] = [
+                'title' => $post['title'],
+                'slug' => $post['slug'],
+                'description' => $post['description'],
+                'author' => $user['name'],
+            ];
+        }
+        return response($postData);
     }
 
     /**
