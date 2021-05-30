@@ -96,8 +96,25 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
-        $post->update($request->all());
-        return $post;
+        $filepath = public_path() . $post['blog-image'];
+        if(file_exists($filepath)) {
+            File::delete($filepath);
+        }
+        $image = $request->file('blog-image');
+        if($request->hasFile('blog-image')) {
+            $newName = rand() . '.' .$image->getClientOriginalExtension();
+            $image->move(public_path('/uploads'), $newName);
+            $path = '/uploads/' . $newName;
+            $newRequest = [
+                'title' => $request['title'],
+                'slug' => $request['slug'],
+                'author' => $request['author'],
+                'description' => $request['description'],
+                'blog-image' => $path,
+            ];
+            $post->update($newRequest);
+            return $post;
+        }
     }
 
     /**
