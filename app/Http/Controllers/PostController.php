@@ -15,7 +15,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $posts = Post::orderBy('id', 'DESC')->get();
         foreach($posts as $post) {
             $user = User::where('id', $post['author'])->first();
             $postData[] = [
@@ -41,8 +41,23 @@ class PostController extends Controller
             'title' => 'required',
             'slug' => 'required',
             'description' => 'required',
+            'blog-image' => 'required',
         ]);
-        return Post::create($request->all());
+
+        $image = $request->file('blog-image');
+        if($request->hasFile('blog-image')) {
+            $newName = rand() . '.' .$image->getClientOriginalExtension();
+            $image->move(public_path('/uploads'), $newName);
+            $path = '/uploads/' . $newName;
+            $newRequest = [
+                'title' => $request['title'],
+                'slug' => $request['slug'],
+                'description' => $request['description'],
+                'blog-image' => $path,
+            ];
+        }
+
+        return Post::create($newRequest);
     }
 
     /**
