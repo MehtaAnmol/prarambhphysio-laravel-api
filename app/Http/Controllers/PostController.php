@@ -19,6 +19,7 @@ class PostController extends Controller
         foreach($posts as $post) {
             $user = User::where('id', $post['author'])->first();
             $postData[] = [
+                'id' => $post['id'],
                 'title' => $post['title'],
                 'slug' => $post['slug'],
                 'description' => $post['description'],
