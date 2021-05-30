@@ -17,17 +17,21 @@ class PostController extends Controller
     public function index()
     {
         $posts = Post::orderBy('id', 'DESC')->get();
-        foreach($posts as $post) {
-            $user = User::where('id', $post['author'])->first();
-            $postData[] = [
-                'id' => $post['id'],
-                'title' => $post['title'],
-                'slug' => $post['slug'],
-                'description' => $post['description'],
-                'author' => $user['name'],
-            ];
+        if($posts != null) {
+            foreach($posts as $post) {
+                $user = User::where('id', $post['author'])->first();
+                $postData[] = [
+                    'id' => $post['id'],
+                    'title' => $post['title'],
+                    'slug' => $post['slug'],
+                    'description' => $post['description'],
+                    'author' => $user['name'],
+                ];
+            }
+            return response($postData);
+        } else {
+            return response([]);
         }
-        return response($postData);
     }
 
     /**
