@@ -56,6 +56,7 @@ class PostController extends Controller
         $post = Post::find($id);
         $user = User::where('id', $post['author'])->first();
         return response([
+            'id' => $post['id'],
             'title' => $post['title'],
             'slug' => $post['slug'],
             'description' => $post['description'],
