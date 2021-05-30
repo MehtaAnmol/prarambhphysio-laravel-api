@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
 use Illuminate\Http\Request;
@@ -36,6 +37,13 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::delete('/posts/{id}',[PostController::class, 'destroy']);
 
     /* ./Posts */
+
+    /* Users */
+    
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}',[UserController::class, 'show']);
+
+    /* ./Users */
 
     /* Images */
 
