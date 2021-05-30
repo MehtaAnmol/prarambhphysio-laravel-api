@@ -16,7 +16,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::orderBy('id', 'DESC')->get();
+        $posts = Post::orderBy('id', 'DESC');
         if($posts != null) {
             foreach($posts as $post) {
                 $user = User::where('id', $post['author'])->first();
