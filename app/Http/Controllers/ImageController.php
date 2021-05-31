@@ -27,8 +27,10 @@ class ImageController extends Controller
                     'updated_at' => $image['updated_at'],
                 ];
             }
+            return response($result);
+        } else {
+            return response([]);
         }
-        return response($result);
     }
 
     /**
