@@ -26,6 +26,8 @@ class PostController extends Controller
                     'slug' => $post['slug'],
                     'description' => $post['description'],
                     'author' => $user['name'],
+                    'created_at' => $post['created_at'],
+                    'updated_at' => $post['updated_at']
                 ];
             }
             return response($postData);
