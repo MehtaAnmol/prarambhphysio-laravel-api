@@ -21,7 +21,9 @@ class ImageController extends Controller
                 'id' => $image['id'],
                 'name' => $image['name'],
                 'file' => base64_encode(file_get_contents(public_path().$image['filepath'])),
-                'filepath' => $image['filepath']
+                'filepath' => $image['filepath'],
+                'created_at' => $image['created_at'],
+                'updated_at' => $image['updated_at'],
             ];
         }
         return response($result);
