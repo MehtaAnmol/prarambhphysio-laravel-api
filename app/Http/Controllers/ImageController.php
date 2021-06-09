@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Image;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
 
 class ImageController extends Controller
@@ -18,13 +20,13 @@ class ImageController extends Controller
         $images = Image::all();
         if(count($images)) {
             foreach($images as $image) {
+                $user = User::where('id', $image['author'])->first();
                 $result[] = [
                     'id' => $image['id'],
                     'name' => $image['name'],
-                    'file' => base64_encode(file_get_contents(public_path().$image['filepath'])),
-                    'filepath' => $image['filepath'],
-                    'created_at' => $image['created_at'],
-                    'updated_at' => $image['updated_at'],
+                    'file' => $image['data'] . ',' . $image['base_string'],
+                    'author' => $user['name'],
+                    'created_at' => $image['created_at']
                 ];
             }
             return response($result);
@@ -41,7 +43,17 @@ class ImageController extends Controller
      */
     public function store(Request $request)
     {
-        return Image::create($this->uploadFile($request));
+        $request->validate([
+            'name' => 'required|string',
+            'data' => 'required|string',
+            'base_string' => 'required|string',
+            'author' => 'required|string'
+        ]);
+        $images = $request->json()->all();
+        foreach ($images as $image) {
+            Image::create($image);
+        }
+        return response(Response::HTTP_OK);
     }
 
     /**
@@ -53,11 +65,12 @@ class ImageController extends Controller
     public function show($id)
     {
         $image = Image::where('id', $id)->first();
-
         return response([
             'id' => $image['id'],
             'name' => $image['name'],
-            'file' => base64_encode(file_get_contents(public_path().$image['filepath']))
+            'file' => $image['data'] . ',' . $image['base_string'],
+            'author' => $image['author'],
+            'created_at' => $image['created_at']
         ]);
     }
 
@@ -71,18 +84,8 @@ class ImageController extends Controller
     public function update(Request $request, $id)
     {
         $image = Image::find($id);
-        if(file_exists(public_path() . $image['filepath'])) {
-            File::delete(public_path() . $image['filepath']);
-            $newFileRequest = $this->uploadFile($request);
-            if($newFileRequest) {
-                $image->update($newFileRequest);
-            }
-            return $image;
-        } else {
-            return response([
-                'message' => 'File doesn\'t exist on the specified path'
-            ]);
-        }
+        $image->update($request);
+        return $image;
     }
 
     /**
@@ -93,35 +96,14 @@ class ImageController extends Controller
      */
     public function destroy($id)
     {
-        $file = Image::find($id);
-        $filepath = public_path() . $file['filepath'];
-        if(file_exists($filepath)) {
-            File::delete($filepath);
-            $isDeleted = Image::destroy($id);
-            if($isDeleted == 1) {
-                return response([
-                    'message' => 'Image deleted successfully.'
-                ]);
-            }
+        $isDeleted = Image::destroy($id);
+        if($isDeleted == 1) {
+            return response([
+                'message' => 'Image deleted successfully.'
+            ]);
         }
         return response([
             'message' => 'Error occurred while deleting image.'
         ]);
-    }
-
-    public function uploadFile(Request $request) {
-        $image = $request->file('image');
-        if($request->hasFile('image')) {
-            $newName = rand() . '.' .$image->getClientOriginalExtension();
-            $image->move(public_path('/uploads'), $newName);
-            $path = '/uploads/' . $newName;
-            $newRequest = [
-                'name' => $newName,
-                'filepath' => $path
-            ];
-    
-            return $newRequest;
-        }
-        return null;
     }
 }

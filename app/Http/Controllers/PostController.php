@@ -48,11 +48,10 @@ class PostController extends Controller
             'title' => 'required',
             'slug' => 'required',
             'description' => 'required',
-            'blog-image' => 'required',
         ]);
 
         $image = $request->file('blog-image');
-        if($request->hasFile('blog-image')) {
+        if($image) {
             $newName = rand() . '.' .$image->getClientOriginalExtension();
             $image->move(public_path('/uploads'), $newName);
             $path = '/uploads/' . $newName;
@@ -62,6 +61,14 @@ class PostController extends Controller
                 'author' => $request['author'],
                 'description' => $request['description'],
                 'blog-image' => $path,
+            ];
+        } else {
+            $newRequest = [
+                'title' => $request['title'],
+                'slug' => $request['slug'],
+                'author' => $request['author'],
+                'description' => $request['description'],
+                'blog-image' => '',
             ];
         }
 
@@ -102,17 +109,29 @@ class PostController extends Controller
         if(file_exists($filepath)) {
             File::delete($filepath);
         }
-        $image = $request->file('blog-image');
-        if($request->hasFile('blog-image')) {
-            $newName = rand() . '.' .$image->getClientOriginalExtension();
-            $image->move(public_path('/uploads'), $newName);
-            $path = '/uploads/' . $newName;
+        if ($request->file('blog-image')) {
+            $image = $request->file('blog-image');
+            if($request->hasFile('blog-image')) {
+                $newName = rand() . '.' .$image->getClientOriginalExtension();
+                $image->move(public_path('/uploads'), $newName);
+                $path = '/uploads/' . $newName;
+                $newRequest = [
+                    'title' => $request['title'],
+                    'slug' => $request['slug'],
+                    'author' => $request['author'],
+                    'description' => $request['description'],
+                    'blog-image' => $path,
+                ];
+                $post->update($newRequest);
+                return $post;
+            }
+        } else {
             $newRequest = [
                 'title' => $request['title'],
                 'slug' => $request['slug'],
                 'author' => $request['author'],
                 'description' => $request['description'],
-                'blog-image' => $path,
+                'blog-image' => '',
             ];
             $post->update($newRequest);
             return $post;

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -41,9 +41,10 @@ class AuthController extends Controller
         $user = User::where('email', $fields['email'])->first();
 
         if (!$user || !Hash::check($fields['password'], $user->password)) {
-            return response([
-                'message' => 'login creds didn\'t matched'
-            ], 401);
+            return response()->json([
+                'message' => 'login creds didn\'t matched',
+                'status' => 401
+            ]);
         }
 
         $token = $user->createToken('645367566B587032')->plainTextToken;
