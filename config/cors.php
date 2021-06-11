@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['http://localhost:8080', 'https://admin.prarambhphysio.com', 'https://prarambhphysio.com'],
+    'allowed_origins' => ['http://localhost:8080', 'http://admin.prarambhphysio.com', 'http://prarambhphysio.com'],
 
     'allowed_origins_patterns' => [],
 
