@@ -46,6 +46,7 @@ class PostController extends Controller
                     'id' => $post['id'],
                     'title' => $post['title'],
                     'slug' => $post['slug'],
+                    'image' => $post['blog-image'],
                     'description' => $post['description'],
                     'author' => $user['name'],
                     'created_at' => $post['created_at'],
