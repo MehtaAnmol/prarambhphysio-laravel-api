@@ -36,6 +36,28 @@ class PostController extends Controller
         }
     }
 
+    public function showRecentPosts()
+    {
+        $posts = Post::orderBy('id', 'DESC')->take(10)->get();
+        if(count($posts) > 0) {
+            foreach($posts as $post) {
+                $user = User::where('id', $post['author'])->first();
+                $postData[] = [
+                    'id' => $post['id'],
+                    'title' => $post['title'],
+                    'slug' => $post['slug'],
+                    'description' => $post['description'],
+                    'author' => $user['name'],
+                    'created_at' => $post['created_at'],
+                    'updated_at' => $post['updated_at']
+                ];
+            }
+            return response($postData);
+        } else {
+            return response([]);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      *
