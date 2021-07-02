@@ -20,7 +20,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register',[AuthController::class, 'register']);
 Route::post('/login',[AuthController::class, 'login']);
-
+Route::get('/recent-posts', [PostController::class, 'showRecentPosts']);
+Route::get('/posts/{id}',[PostController::class, 'show']);
 Route::group(['middleware' => ['auth:sanctum']], function () {
     /* Logout */
     
@@ -29,9 +30,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     /* ./Logout */
 
     /* Posts */
-    
     Route::get('/posts', [PostController::class, 'index']);
-    Route::get('/posts/{id}',[PostController::class, 'show']);
     Route::post('/posts',[PostController::class, 'store']);
     Route::put('/posts/{id}',[PostController::class, 'update']);
     Route::delete('/posts/{id}',[PostController::class, 'destroy']);

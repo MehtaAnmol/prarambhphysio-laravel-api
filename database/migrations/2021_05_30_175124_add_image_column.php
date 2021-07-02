@@ -14,7 +14,7 @@ class AddImageColumn extends Migration
     public function up()
     {
         Schema::table('posts', function (Blueprint $table) {
-            $table->string('blog-image');
+            $table->longText('blog-image');
         });
     }
 

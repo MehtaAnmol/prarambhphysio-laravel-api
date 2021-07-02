@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -26,6 +27,7 @@ class PostController extends Controller
                     'slug' => $post['slug'],
                     'description' => $post['description'],
                     'author' => $user['name'],
+                    'blog_image' => $post['blog-image'],
                     'created_at' => $post['created_at'],
                     'updated_at' => $post['updated_at']
                 ];
@@ -73,29 +75,18 @@ class PostController extends Controller
             'description' => 'required',
         ]);
 
-        $image = $request->file('blog-image');
-        if($image) {
-            $newName = rand() . '.' .$image->getClientOriginalExtension();
-            $image->move(public_path('/uploads'), $newName);
-            $path = '/uploads/' . $newName;
+        try {
             $newRequest = [
                 'title' => $request['title'],
                 'slug' => $request['slug'],
                 'author' => $request['author'],
                 'description' => $request['description'],
-                'blog-image' => $path,
+                'blog-image' => $request['blog-image'],
             ];
-        } else {
-            $newRequest = [
-                'title' => $request['title'],
-                'slug' => $request['slug'],
-                'author' => $request['author'],
-                'description' => $request['description'],
-                'blog-image' => '',
-            ];
+            return Post::create($newRequest);
+        } catch (\Exception $th) {
+            throw $th;
         }
-
-        return Post::create($newRequest);
     }
 
     /**
@@ -128,37 +119,15 @@ class PostController extends Controller
     public function update(Request $request, $id)
     {
         $post = Post::find($id);
-        $filepath = public_path() . $post['blog-image'];
-        if(file_exists($filepath)) {
-            File::delete($filepath);
-        }
-        if ($request->file('blog-image')) {
-            $image = $request->file('blog-image');
-            if($request->hasFile('blog-image')) {
-                $newName = rand() . '.' .$image->getClientOriginalExtension();
-                $image->move(public_path('/uploads'), $newName);
-                $path = '/uploads/' . $newName;
-                $newRequest = [
-                    'title' => $request['title'],
-                    'slug' => $request['slug'],
-                    'author' => $request['author'],
-                    'description' => $request['description'],
-                    'blog-image' => $path,
-                ];
-                $post->update($newRequest);
-                return $post;
-            }
-        } else {
-            $newRequest = [
-                'title' => $request['title'],
-                'slug' => $request['slug'],
-                'author' => $request['author'],
-                'description' => $request['description'],
-                'blog-image' => '',
-            ];
-            $post->update($newRequest);
-            return $post;
-        }
+        $newRequest = [
+            'title' => $request['title'],
+            'slug' => $request['slug'],
+            'author' => $request['author'],
+            'description' => $request['description'],
+            'blog-image' => $request['blog-image'],
+        ];
+        $post->update($newRequest);
+        return $post;
     }
 
     /**
